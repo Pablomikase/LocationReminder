@@ -1,12 +1,19 @@
 package com.udacity.project4.base
 
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import com.udacity.project4.locationreminders.ReminderDescriptionActivity
+import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 
 abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Unit)? = null) :
     RecyclerView.Adapter<DataBindingViewHolder<T>>() {
@@ -35,9 +42,14 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
     override fun onBindViewHolder(holder: DataBindingViewHolder<T>, position: Int) {
         val item = getItem(position)
         holder.bind(item)
-        holder.itemView.setOnClickListener {
+        holder.itemView.setOnClickListener { view ->
             callback?.invoke(item)
-        }
+            Log.i("ViewHolder", "funciona el click listener?? " + getItem(position))
+
+            val myIntent  = ReminderDescriptionActivity.newIntent(view.context, getItem(position) as ReminderDataItem)
+            view.context.startActivity(myIntent)
+            }
+
     }
 
     fun getItem(position: Int) = _items[position]
@@ -66,5 +78,8 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
     open fun getLifecycleOwner(): LifecycleOwner? {
         return null
     }
+
+
+
 }
 
