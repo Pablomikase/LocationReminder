@@ -225,9 +225,9 @@ class RemindersActivity : AppCompatActivity() {
         }
         locationSettingsResponseTask.addOnCompleteListener {
             if (it.isSuccessful) {
-                //addGeofenceForClue()
+                addGeofenceForClue()
                 //GeofenceTransitionsJobIntentService.enqueueWork(this, intent)
-                GeofenceTransitionsJobIntentService.enqueueWork(this, intent)
+                //GeofenceTransitionsJobIntentService.enqueueWork(this, intent)
             }
         }
 

@@ -27,13 +27,19 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import com.udacity.project4.locationreminders.data.local.getDataBase
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
 
 /*
  * We need to create a NotificationChannel associated with our CHANNEL_ID before sending a
  * notification.
  */
+
+private var reminder: ReminderDTO? = null
 fun createChannel(context: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val notificationChannel = NotificationChannel(
@@ -79,6 +85,11 @@ fun NotificationManager.sendGeofenceEnteredNotification(context: Context, foundI
         .bigLargeIcon(null)
 
 
+    //Getting the reminder from local DB
+    executeJob(context, foundIndex)
+
+
+
     // We use the name resource ID from the LANDMARK_DATA along with content_text to create
     // a custom message when a Geofence triggers.
     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -92,6 +103,17 @@ fun NotificationManager.sendGeofenceEnteredNotification(context: Context, foundI
         .setLargeIcon(mapImage)
 
     notify(NOTIFICATION_ID, builder.build())
+}
+
+fun executeJob(contenxt: Context, locationID: Int) = runBlocking {
+    launch {
+        reminder = getReminderFromLocalDB(context = contenxt, locationID = locationID)
+    }.join()
+}
+
+suspend fun getReminderFromLocalDB(context: Context, locationID: Int): ReminderDTO? {
+    val localDatabase = getDataBase(context)
+    return localDatabase.reminderDao().getReminderById(locationID.toString())
 }
 
 
