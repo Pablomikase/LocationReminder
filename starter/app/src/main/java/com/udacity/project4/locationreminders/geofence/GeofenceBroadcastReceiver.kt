@@ -27,8 +27,7 @@ import com.udacity.project4.locationreminders.RemindersActivity.Companion.ACTION
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
-//: implement the onReceive method to receive the geofencing events at the background
-        // : Step 11 implement the onReceive method
+
         if (intent.action == ACTION_GEOFENCE_EVENT) {
             val geofencingEvent = GeofencingEvent.fromIntent(intent)
 
@@ -60,9 +59,11 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                     NotificationManager::class.java
                 ) as NotificationManager
 
-                notificationManager.   sendGeofenceEnteredNotification(
+                notificationManager.sendGeofenceEnteredNotification(
                     context, foundIndex
                 )
+
+
             }
         }
 

@@ -28,7 +28,9 @@ import com.udacity.project4.R
 import com.udacity.project4.authentication.AuthenticationActivity
 import com.udacity.project4.authentication.AuthenticationViewModel
 import com.udacity.project4.authentication.GeofencingConstants
+import com.udacity.project4.authentication.createChannel
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
+import com.udacity.project4.locationreminders.geofence.GeofenceTransitionsJobIntentService
 import kotlinx.android.synthetic.main.activity_reminders.*
 
 /**
@@ -64,7 +66,8 @@ class RemindersActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reminders)
-
+        geofencingClient = LocationServices.getGeofencingClient(this)
+        createChannel(this)
     }
 
     override fun onStart() {
@@ -222,7 +225,9 @@ class RemindersActivity : AppCompatActivity() {
         }
         locationSettingsResponseTask.addOnCompleteListener {
             if (it.isSuccessful) {
-                addGeofenceForClue()
+                //addGeofenceForClue()
+                //GeofenceTransitionsJobIntentService.enqueueWork(this, intent)
+                GeofenceTransitionsJobIntentService.enqueueWork(this, intent)
             }
         }
 

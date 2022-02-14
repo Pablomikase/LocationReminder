@@ -26,6 +26,9 @@ import android.graphics.Color
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.udacity.project4.R
+import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import org.koin.android.ext.android.inject
 
 /*
  * We need to create a NotificationChannel associated with our CHANNEL_ID before sending a
@@ -75,11 +78,13 @@ fun NotificationManager.sendGeofenceEnteredNotification(context: Context, foundI
         .bigPicture(mapImage)
         .bigLargeIcon(null)
 
+
     // We use the name resource ID from the LANDMARK_DATA along with content_text to create
     // a custom message when a Geofence triggers.
     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         .setContentTitle(context.getString(R.string.app_name))
-        .setContentText("Este es el contenido de mi notificación")
+        //.setContentText("Este es el contenido de mi notificación")
+        .setContentText("Se encuentra la localidad - "+ foundIndex + " - " + GeofencingConstants.FAKE_DATA[foundIndex].latLong.toString())
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setContentIntent(contentPendingIntent)
         .setSmallIcon(R.drawable.ic_location)
@@ -88,6 +93,7 @@ fun NotificationManager.sendGeofenceEnteredNotification(context: Context, foundI
 
     notify(NOTIFICATION_ID, builder.build())
 }
+
 
 private const val NOTIFICATION_ID = 33
 private const val CHANNEL_ID = "GeofenceChannel"

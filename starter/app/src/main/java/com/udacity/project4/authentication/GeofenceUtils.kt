@@ -4,6 +4,8 @@ import android.content.Context
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.maps.model.LatLng
 import com.udacity.project4.R
+import com.udacity.project4.locationreminders.data.local.RemindersDao
+import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import java.util.concurrent.TimeUnit
 
 /**
@@ -54,6 +56,7 @@ internal object GeofencingConstants {
             2,
             LatLng(37.808674, -122.409821))
     )
+
 
     val NUM_LANDMARKS = FAKE_DATA.size
     const val GEOFENCE_RADIUS_IN_METERS = 100f
