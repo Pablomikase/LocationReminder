@@ -2,14 +2,17 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -34,6 +37,8 @@ import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
+    private lateinit var lastKnownLocation: Location
+
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSelectLocationBinding
@@ -41,8 +46,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     //Maps variables
     private lateinit var map: GoogleMap
     private val REQUEST_LOCATION_PERMISSION = 1
+    private var latitude = 37.42
+    private var longitude = -122.0678
+    private val zoomLevel = 15f
+    private lateinit var fusedLocationProviderClient:FusedLocationProviderClient
+    private val TAG = SelectLocationFragment::class.java.simpleName
 
-    private val TAG = "BASEFRAGMENT"
+
+    private val TAG_FRAGMENT = "BASEFRAGMENT"
 
 
     override fun onCreateView(
@@ -60,9 +71,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 //         add the map setup implementation
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-//        TODO: zoom to the user location after taking his permission
-//        TODO: add style to the map
-//        TODO: put a marker to location that the user selected
+//        : zoom to the user location after taking his permission
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.requireContext())
+
+//        : add style to the map
+//        : put a marker to location that the user selected
 
 
 //        TODO: call this function after the user confirms on the selected location
@@ -106,14 +119,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-
+        setMapStyle(map)
         //Location Variables
-        val latitude = 37.42
-        val longitude = -122.0678
-        val zoomLevel = 15f
+        setHomePosition()
         val homeLatLng = LatLng(latitude, longitude)
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
+        //map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLatLng, zoomLevel))
         map.addMarker(MarkerOptions().position(homeLatLng))
 
         setMapLongClick(map)
@@ -139,6 +150,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
             _viewModel.latitude.value = latLng.latitude
             _viewModel.longitude.value = latLng.longitude
+            _viewModel.reminderSelectedLocationStr.value =
+                String.format("%.3f", latLng.latitude) +" - " +
+                        String.format("%.3f", latLng.longitude)
+            Toast.makeText(this.requireContext(), R.string.user_feedback_after_selecting_poi, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -187,8 +202,56 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         // location data layer.
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.size > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                //Habilita la localizacion
                 enableMyLocation()
+
             }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setHomePosition(){
+        //mueve al usuario a su localizacion
+        try {
+
+                val locationResult = fusedLocationProviderClient.lastLocation
+                locationResult.addOnCompleteListener(this.requireActivity()) { task ->
+                    if (task.isSuccessful) {
+                        // Set the map's camera position to the current location of the device.
+                        lastKnownLocation = task.result!!
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            LatLng(
+                                lastKnownLocation.latitude,
+                                lastKnownLocation.longitude), 15f))
+                    } else {
+                        Log.d(TAG, "Current location is null. Using defaults.")
+                        Log.e(TAG, "Exception: %s", task.exception)
+
+                        map?.uiSettings?.isMyLocationButtonEnabled = false
+                    }
+                }
+
+        } catch (e: SecurityException) {
+            Log.e("Exception: %s", e.message, e)
+        }
+    }
+
+    private fun setMapStyle(map: GoogleMap) {
+        try {
+            // Customize the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            val success = map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    this.requireContext(),
+                    R.raw.map_style
+                )
+            )
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e(TAG, "Can't find style. Error: ", e)
         }
     }
 
