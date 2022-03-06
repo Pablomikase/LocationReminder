@@ -16,10 +16,8 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.firebase.ui.auth.AuthUI
-import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
@@ -30,7 +28,7 @@ import com.udacity.project4.authentication.AuthenticationViewModel
 import com.udacity.project4.authentication.GeofencingConstants
 import com.udacity.project4.authentication.createChannel
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
-import com.udacity.project4.locationreminders.geofence.GeofenceTransitionsJobIntentService
+import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.android.synthetic.main.activity_reminders.*
 
 /**
@@ -51,6 +49,7 @@ class RemindersActivity : AppCompatActivity() {
     }
 
     private val viewModel by viewModels<AuthenticationViewModel>()
+    private val remindersViewModel by viewModels<SaveReminderViewModel>()
 
     private val runningQOrLater = android.os.Build.VERSION.SDK_INT >=
             android.os.Build.VERSION_CODES.Q
@@ -196,7 +195,7 @@ class RemindersActivity : AppCompatActivity() {
     }
 
     private fun checkDeviceLocationSettingsAndStartGeofence(resolve: Boolean = true) {
-        // : Step 6 add code to check that the device's location is on
+        // :  add code to check that the device's location is on
         val locationRequest = LocationRequest.create().apply {
             priority = LocationRequest.PRIORITY_LOW_POWER
         }
@@ -225,7 +224,8 @@ class RemindersActivity : AppCompatActivity() {
         }
         locationSettingsResponseTask.addOnCompleteListener {
             if (it.isSuccessful) {
-                addGeofenceForClue()
+
+
                 //GeofenceTransitionsJobIntentService.enqueueWork(this, intent)
                 //GeofenceTransitionsJobIntentService.enqueueWork(this, intent)
             }
@@ -234,8 +234,8 @@ class RemindersActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun addGeofenceForClue() {
-        // : Step 10 add in code to add the geofence
+    private fun addGeofenceForNotification() {
+        // 10 add in code to add the geofence
         if (viewModel.geofenceIsActive()) return
         val currentGeofenceIndex = viewModel.nextGeofenceIndex()
         if (currentGeofenceIndex >= GeofencingConstants.NUM_LANDMARKS) {
@@ -248,8 +248,8 @@ class RemindersActivity : AppCompatActivity() {
         val geofence = Geofence.Builder()
             .setRequestId(currentGeofenceData.id)
             .setCircularRegion(
-                currentGeofenceData.latLong.latitude,
-                currentGeofenceData.latLong.longitude,
+                currentGeofenceData.latitude!!,
+                currentGeofenceData.longitude!!,
                 GeofencingConstants.GEOFENCE_RADIUS_IN_METERS
             )
             .setExpirationDuration(GeofencingConstants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)

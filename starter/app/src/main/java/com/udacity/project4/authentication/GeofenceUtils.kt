@@ -1,11 +1,13 @@
 package com.udacity.project4.authentication
 
+import android.content.ClipDescription
 import android.content.Context
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.maps.model.LatLng
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.local.RemindersDao
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import java.util.concurrent.TimeUnit
 
 /**
@@ -30,7 +32,6 @@ fun errorMessage(context: Context, errorCode: Int): String {
 /**
  * Stores latitude and longitude information along with a hint to help user find the location.
  */
-data class LandmarkDataObject(val id: String, val name: Int, val latLong: LatLng)
 
 internal object GeofencingConstants {
 
@@ -41,20 +42,21 @@ internal object GeofencingConstants {
     val GEOFENCE_EXPIRATION_IN_MILLISECONDS: Long = TimeUnit.HOURS.toMillis(1)
 
     val FAKE_DATA = arrayOf(
-        LandmarkDataObject(
+        ReminderDataItem(
             "golden_gate_bridge",
-            0,
-            LatLng(41.367759, 2.125575)),
+            "Prueba de desctipción",
+            "Barcelona",
+            3.456,
+            54.345,
+            "23"),
 
-        LandmarkDataObject(
-            "ferry_building",
-            1,
-            LatLng(37.795490, -122.394276)),
-
-        LandmarkDataObject(
-            "pier_39",
-            2,
-            LatLng(37.808674, -122.409821))
+        ReminderDataItem(
+            "golden_gate_bridge",
+            "Prueba de desctipción",
+            "Barcelona",
+            3.456,
+            54.345,
+            "23")
     )
 
 

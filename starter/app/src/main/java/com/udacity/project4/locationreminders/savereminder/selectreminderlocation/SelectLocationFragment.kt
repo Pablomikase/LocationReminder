@@ -209,7 +209,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    @SuppressLint("MissingPermission")
+
     private fun setHomePosition(){
         //mueve al usuario a su localizacion
         try {

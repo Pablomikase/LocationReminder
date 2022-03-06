@@ -12,6 +12,8 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSaveReminderBinding
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.LocalDB
+import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.utils.sendNotification
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -58,11 +60,12 @@ class SaveReminderFragment : BaseFragment() {
 //             2) save the reminder to the local db
 
             val reminder = ReminderDTO(title, description, location,latitude,longitude)
-
+            val reminderDataItem = ReminderDataItem(title, description, location, latitude, longitude)
             _viewModel.viewModelScope.launch {
-                saveReminder(reminder)
+                _viewModel.validateAndSaveReminder(reminderDataItem)
+                //_viewModel.addGeofenceForNotification_MyOwn(reminderDataItem, context!!)
+                sendNotification(context!!, reminderDataItem)
             }
-            NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToReminderListFragment())
         }
     }
 

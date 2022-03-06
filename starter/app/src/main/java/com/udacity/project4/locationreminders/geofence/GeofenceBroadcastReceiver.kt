@@ -60,7 +60,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                 ) as NotificationManager
 
                 notificationManager.sendGeofenceEnteredNotification(
-                    context, foundIndex
+                    context, foundIndex, intent.getStringExtra("notificationContent")!!
                 )
 
 
