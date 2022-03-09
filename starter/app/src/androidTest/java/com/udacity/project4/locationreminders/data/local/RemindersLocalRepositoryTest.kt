@@ -1,8 +1,5 @@
 package com.udacity.project4.locationreminders.data.local
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
@@ -10,15 +7,8 @@ import com.udacity.project4.locationreminders.data.dto.Result
 import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.instanceOf
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.core.IsEqual
-import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -42,8 +32,8 @@ class RemindersLocalRepositoryTest {
     private val remindersEmptyLIst = mutableListOf<ReminderDTO>()
 
 
-    private lateinit var remindersDaoTest: RemindersDaoTest
-    private lateinit var remindersDaoEmptyTest: RemindersDaoTest
+    private lateinit var remindersFakeRepository: RemindersFakeRepository
+    private lateinit var remindersFakeRepositoryEmpty: RemindersFakeRepository
 
     //Class under test
     private lateinit var remindersLocalRepository: RemindersLocalRepository
@@ -51,11 +41,11 @@ class RemindersLocalRepositoryTest {
     @Before
     fun createRepository() {
 
-        remindersDaoTest = RemindersDaoTest(remindersList)
-        remindersDaoEmptyTest = RemindersDaoTest(remindersEmptyLIst)
+        remindersFakeRepository = RemindersFakeRepository(remindersList)
+        remindersFakeRepositoryEmpty = RemindersFakeRepository(remindersEmptyLIst)
 
         remindersLocalRepository = RemindersLocalRepository(
-            remindersDaoTest,
+            remindersFakeRepository,
             Dispatchers.Unconfined
 
         )
@@ -70,7 +60,7 @@ class RemindersLocalRepositoryTest {
 
     @Test
     fun saveReminder_requestAllRemindersFromRemoteDataSource() = runBlockingTest {
-        remindersDaoEmptyTest.saveReminder(reminder1)
+        remindersFakeRepository.saveReminder(reminder1)
         val reminders = remindersLocalRepository.getReminders() as Result.Success
         assertEquals(reminders.data.first(), reminder1)
         //assertThat(reminders.data, IsEqual(remindersList))

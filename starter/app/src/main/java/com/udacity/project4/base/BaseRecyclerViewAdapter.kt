@@ -1,7 +1,5 @@
 package com.udacity.project4.base
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.udacity.project4.locationreminders.ReminderDescriptionActivity
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 
-abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Unit)? = null) :
+abstract class BaseRecyclerViewAdapter<T>(
+    private val callback: ((item: T) -> Unit)? = null
+
+                                          ) :
     RecyclerView.Adapter<DataBindingViewHolder<T>>() {
 
     private var _items: MutableList<T> = mutableListOf()
@@ -48,6 +49,8 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
 
             val myIntent  = ReminderDescriptionActivity.newIntent(view.context, getItem(position) as ReminderDataItem)
             view.context.startActivity(myIntent)
+
+
             }
 
     }
@@ -80,6 +83,8 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
     }
 
 
-
+    class OnClickListener(val clickListener: (reminder: ReminderDataItem) -> Unit){
+        fun onClick(reminder:ReminderDataItem){clickListener(reminder)}
+    }
 }
 
