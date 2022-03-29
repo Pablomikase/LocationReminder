@@ -35,7 +35,7 @@
     <string name="err_select_location">Please select location</string>
     <string name="loadingButtonText">Loading…</string>
     <string name="error_in_login">Error happened with code: </string>
-    <string name="user_feedback_after_selecting_poi">You have selected a new location, go back to continue.</string>
+    <string name="user_feedback_after_selecting_poi">You have selected a new location, click on save button to continue.</string>
 
     <!-- Error strings -->
     <string name="geofence_unknown_error">Unknown error: the Geofence service is not available now.</string>
