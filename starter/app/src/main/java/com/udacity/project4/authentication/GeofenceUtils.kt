@@ -43,20 +43,12 @@ internal object GeofencingConstants {
 
     val FAKE_DATA = arrayOf(
         ReminderDataItem(
-            "golden_gate_bridge",
+            "casaBarcelona",
             "Prueba de desctipción",
             "Barcelona",
-            3.456,
-            54.345,
-            "23"),
-
-        ReminderDataItem(
-            "golden_gate_bridge",
-            "Prueba de desctipción",
-            "Barcelona",
-            3.456,
-            54.345,
-            "23")
+            41.367707,
+            2.125527,
+            "casa")
     )
 
 

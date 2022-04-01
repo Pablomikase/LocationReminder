@@ -33,10 +33,9 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val selectedPOI = MutableLiveData<PointOfInterest>()
     val latitude = MutableLiveData<Double>()
     val longitude = MutableLiveData<Double>()
+    val locationToSave = MutableLiveData<ReminderDataItem>()
+    val reminderId = MutableLiveData<String>()
 
-    //Data used for geofencind feature
-    lateinit var geofencingClient: GeofencingClient
-    lateinit var geofencePendingIntent: PendingIntent
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called
@@ -48,6 +47,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         selectedPOI.value = null
         latitude.value = null
         longitude.value = null
+        locationToSave.value = null
+        reminderId.value = null
     }
 
     /**
@@ -64,6 +65,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
      */
     fun saveReminder(reminderData: ReminderDataItem) {
         showLoading.value = true
+        locationToSave.value = reminderData
+        reminderId.value = reminderData.id
         viewModelScope.launch {
             dataSource.saveReminder(
                 ReminderDTO(
@@ -97,63 +100,20 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         return true
     }
 
-    @SuppressLint("MissingPermission")
-    fun addGeofenceForNotification_MyOwn(
-        reminderSentToNotification: ReminderDataItem,
-        context:Context
-    ) {
-        //Creating a custom intent to pass to bradastreceiver
-        val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
-        intent.action = "RemindersActivity.treasureHunt.action.ACTION_GEOFENCE_EVENT"
-        intent.putExtra("notificationContent", buildNotificationTextContent(reminderSentToNotification))
-        geofencePendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    fun isGeofenceActive(): Boolean {
 
-        //Starting client
-        geofencingClient = LocationServices.getGeofencingClient(context)
-
-        val geofence = Geofence.Builder()
-            .setRequestId(reminderSentToNotification.id)
-            .setCircularRegion(
-                reminderSentToNotification.latitude!!,
-                reminderSentToNotification.longitude!!,
-                GeofencingConstants.GEOFENCE_RADIUS_IN_METERS
-            )
-            .setExpirationDuration(GeofencingConstants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-            .build()
-
-        val geofencingRequest = GeofencingRequest.Builder()
-            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-            .addGeofence(geofence)
-            .build()
-
-        geofencingClient.removeGeofences(geofencePendingIntent)?.run {
-            addOnCompleteListener {
-                geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
-                    addOnSuccessListener {
-                        Toast.makeText(
-                            context, "Geofence Added :)",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        Log.e("Add Geofence", geofence.requestId)
-
-                    }
-                    addOnFailureListener {
-                        Toast.makeText(
-                            context, R.string.geofences_not_added,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        if ((it.message != null)) {
-                            Log.w("SaveReminderViewModel", it.message.toString())
-                        }
-                    }
-                }
-            }
-        }
+        return true
     }
 
-    private fun buildNotificationTextContent(reminderData: ReminderDataItem): String {
-        return "You are close to one of your favourite places, have a god time in ${reminderData.title}"
+    fun createAndSetReminderDataItem(
+        title: String,
+        description:String,
+        location: String,
+        latitude: Double,
+        longitude: Double
+    ): ReminderDataItem{
+        locationToSave.value = ReminderDataItem(title, description, location, latitude, longitude)
+        return locationToSave.value!!
     }
+
 }

@@ -3,14 +3,18 @@ package com.udacity.project4.locationreminders.reminderslist
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.getOrAwaitValue
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertTrue
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.hamcrest.CoreMatchers.not
-import org.hamcrest.CoreMatchers.nullValue
+import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.*
 import org.junit.runner.RunWith
@@ -100,7 +104,6 @@ class RemindersListViewModelTest {
 
 
     //LIVE DATA TESTING
-
     @Test
     fun reminderList_liveData(){
         //Given a fresh ListViewModel
@@ -112,7 +115,39 @@ class RemindersListViewModelTest {
         val value = remindersListViewModelTest.remindersList.getOrAwaitValue()
         assertThat(value, (not(nullValue())))
 
+    }
 
+    @Test
+    fun loadReminders_lodDataFromDataBase_error(){
+        //Given a fresh ListViewModel and set shouldGetAnError to true
+        myFakeDatabase.setReturnError(true)
+
+        //When loading one reminder from fake database
+        remindersListViewModelTest.loadReminders()
+
+        //Then the LiveData with remindersList should be null
+        val value = remindersListViewModelTest.remindersList.getOrAwaitValue()
+        assertThat(value, (`is`(nullValue())))
+    }
+
+    //CHECK LOADING
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
+
+    @Test
+    fun loadReminders_loadingStatusBarAppears_itIsGoneWhenFinishes(){
+        //Given a fresh ListViewModel and pause dispatcher
+        mainCoroutineRule.pauseDispatcher()
+
+        //When loading one reminder from fake database
+        remindersListViewModelTest.loadReminders()
+        assertThat(remindersListViewModelTest.showLoading.getOrAwaitValue(), `is`(true))
+        mainCoroutineRule.resumeDispatcher()
+
+        //Show loading show disappear whe dispatcher resumes
+        assertThat(remindersListViewModelTest.showLoading.getOrAwaitValue(), `is`(false))
 
     }
 
