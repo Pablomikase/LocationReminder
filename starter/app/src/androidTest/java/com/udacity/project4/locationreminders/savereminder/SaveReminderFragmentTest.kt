@@ -3,6 +3,8 @@ package com.udacity.project4.locationreminders.savereminder
 import android.app.Application
 import android.os.Bundle
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
@@ -19,6 +21,7 @@ import com.udacity.project4.locationreminders.data.local.FakeAndroidDataSource
 import com.udacity.project4.locationreminders.data.local.RemindersFakeRepository
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment
+import com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragmentDirections
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorFragment
 import com.udacity.project4.utils.EspressoIdlingResource
@@ -37,6 +40,8 @@ import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.get
 import org.koin.test.inject
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
 
 
 @RunWith(AndroidJUnit4::class)
@@ -145,11 +150,19 @@ class SaveReminderFragmentTest : AutoCloseKoinTest(){
         //GIVEN - A saveReminder Fragment with an empty title
         val scenario = launchFragmentInContainer<SelectLocationFragment>(Bundle(), R.style.AppTheme)
         dataBindingIdlingResource.monitorFragment(scenario)
+        val navController = mock(NavController::class.java)
+        scenario.onFragment {
+            Navigation.setViewNavController(it.view!!, navController)
+        }
 
-        Thread.sleep(3000)
+        Thread.sleep(2000)
 
         //WHEN - ReminderListFragment launched to display reminders
         onView(withId(R.id.map)).perform(longClick())
+
+        verify(navController).navigate(
+            SelectLocationFragmentDirections.actionSelectLocationFragmentToSaveReminderFragment()
+        )
 
         //AND - When the location is selected I click on the save button
         onView(withId(R.id.saveSelectedLocationButton)).perform(click())

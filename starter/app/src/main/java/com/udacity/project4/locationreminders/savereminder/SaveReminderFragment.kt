@@ -2,6 +2,7 @@ package com.udacity.project4.locationreminders.savereminder
 
 import android.Manifest
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -50,6 +51,8 @@ class SaveReminderFragment : BaseFragment() {
         PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
+    private lateinit var contxt: Context
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,7 +94,7 @@ class SaveReminderFragment : BaseFragment() {
             val reminderDataItem = ReminderDataItem(title, description, location, latitude, longitude)
             _viewModel.viewModelScope.launch {
                 _viewModel.validateAndSaveReminder(reminderDataItem)
-
+                findNavController().navigate(SaveReminderFragmentDirections.actionSaveReminderFragmentToReminderListFragment())
                 try {
                     sendGeofence()
                 }catch (error: IllegalArgumentException){
@@ -127,8 +130,8 @@ class SaveReminderFragment : BaseFragment() {
             // Set the request ID, string to identify the geofence.
             .setRequestId(_viewModel.reminderId.value)
             // Set the circular region of this geofence.
-            .setCircularRegion(41.367733,
-                2.125548,
+            .setCircularRegion(_viewModel.latitude.value!!,
+                _viewModel.longitude.value!!,
                 GeofencingConstants.GEOFENCE_RADIUS_IN_METERS
             )
             // Set the expiration duration of the geofence. This geofence gets
@@ -173,7 +176,7 @@ class SaveReminderFragment : BaseFragment() {
                 geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
                     addOnSuccessListener {
                         // Geofences added.
-                        Toast.makeText(requireContext(), R.string.geofence_entered,
+                        Toast.makeText(contxt, R.string.geofence_entered,
                             Toast.LENGTH_SHORT)
                             .show()
                         Log.e("Add Geofence", geofence.requestId)
@@ -183,7 +186,7 @@ class SaveReminderFragment : BaseFragment() {
                     }
                     addOnFailureListener {
                         // Failed to add geofences.
-                        Toast.makeText(requireContext(), R.string.geofences_not_added,
+                        Toast.makeText(contxt, R.string.geofences_not_added,
                             Toast.LENGTH_SHORT).show()
                         if ((it.message != null)) {
                             Log.w(TAG, it.message!!)
@@ -193,6 +196,11 @@ class SaveReminderFragment : BaseFragment() {
             }
         }
 
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        contxt = context
     }
 
 }
