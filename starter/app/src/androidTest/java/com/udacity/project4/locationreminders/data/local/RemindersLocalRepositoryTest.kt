@@ -1,5 +1,6 @@
 package com.udacity.project4.locationreminders.data.local
 
+import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -178,7 +179,7 @@ class RemindersLocalRepositoryTest {
 
         //Then the result must be an error
         val resultAsError = result as Result.Error
-        print(resultAsError)
+        assertThat(resultAsError.message, `is`("Reminder not found!"))
     }
 
 

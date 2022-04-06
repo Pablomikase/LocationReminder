@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
@@ -37,6 +38,14 @@ class RemindersListViewModelTest {
                 321.321
             )
         )
+    )
+
+    val testReminder = ReminderDTO(
+        "Test title",
+        "Test Description",
+        "Test Location",
+        321.321,
+        321.321
     )
 
     private lateinit var remindersListViewModelTestEmpty: RemindersListViewModel
@@ -129,6 +138,19 @@ class RemindersListViewModelTest {
         val value = remindersListViewModelTest.remindersList.getOrAwaitValue()
         assertThat(value, (`is`(nullValue())))
     }
+
+    /*@Test
+    fun loadReminder_lodDataFromDataBase_error() = runBlockingTest{
+        //Given a fresh ListViewModel with one test reminder and set shouldGetAnError to true
+        myFakeDatabase.saveReminder(testReminder)
+        myFakeDatabase.setReturnError(true)
+
+        //When loading one reminder from fake database
+        val result = myFakeDatabase.getReminder(testReminder.id)
+
+        //Then the LiveData with remindersList should be null
+        assertThat(result, (`is`(nullValue())))
+    }*/
 
     //CHECK LOADING
 

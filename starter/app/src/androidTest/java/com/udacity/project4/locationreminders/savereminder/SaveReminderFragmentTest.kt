@@ -131,14 +131,14 @@ class SaveReminderFragmentTest : AutoCloseKoinTest(){
 
     @Before
     fun registerIdlingResource(){
-        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
-        IdlingRegistry.getInstance().register(dataBindingIdlingResource)
+        //IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+        //IdlingRegistry.getInstance().register(dataBindingIdlingResource)
     }
 
     @After
     fun unregisterIdlingResource(){
-        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
-        IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
+        //IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+        //IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
     }
 
 

@@ -54,10 +54,12 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     /**
      * Validate the entered data then saves the reminder data to the DataSource
      */
-    fun validateAndSaveReminder(reminderData: ReminderDataItem) {
+    fun validateAndSaveReminder(reminderData: ReminderDataItem): Boolean {
         if (validateEnteredData(reminderData)) {
             saveReminder(reminderData)
+            return true
         }
+        return false
     }
 
     /**
@@ -79,8 +81,6 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
                 )
             )
             showLoading.value = false
-            showToast.value = app.getString(R.string.reminder_saved)
-
         }
     }
 
@@ -101,19 +101,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     }
 
     fun isGeofenceActive(): Boolean {
-
         return true
-    }
-
-    fun createAndSetReminderDataItem(
-        title: String,
-        description:String,
-        location: String,
-        latitude: Double,
-        longitude: Double
-    ): ReminderDataItem{
-        locationToSave.value = ReminderDataItem(title, description, location, latitude, longitude)
-        return locationToSave.value!!
     }
 
 }
