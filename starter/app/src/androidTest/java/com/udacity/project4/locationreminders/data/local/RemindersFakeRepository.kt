@@ -19,10 +19,10 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
 import org.junit.Test
 
-@ExperimentalCoroutinesApi
-@RunWith(AndroidJUnit4::class)
+//@ExperimentalCoroutinesApi
+//@RunWith(AndroidJUnit4::class)
 //Unit test the DAO
-@SmallTest
+//@SmallTest
 class RemindersFakeRepository(var reminders: MutableList<ReminderDTO>) : RemindersDao{
 
     override suspend fun getReminders(): List<ReminderDTO> {

@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.reminderslist
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.udacity.project4.R
 import com.udacity.project4.locationreminders.MainCoroutineRule
 import com.udacity.project4.locationreminders.data.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
@@ -136,21 +137,10 @@ class RemindersListViewModelTest {
 
         //Then the LiveData with remindersList should be null
         val value = remindersListViewModelTest.remindersList.getOrAwaitValue()
+        val snackBarErrorMessage = remindersListViewModelTest.showSnackBar.getOrAwaitValue()
         assertThat(value, (`is`(nullValue())))
+        assertThat(snackBarErrorMessage, (`is`("Test error - Not posible to load reminders.")))
     }
-
-    /*@Test
-    fun loadReminder_lodDataFromDataBase_error() = runBlockingTest{
-        //Given a fresh ListViewModel with one test reminder and set shouldGetAnError to true
-        myFakeDatabase.saveReminder(testReminder)
-        myFakeDatabase.setReturnError(true)
-
-        //When loading one reminder from fake database
-        val result = myFakeDatabase.getReminder(testReminder.id)
-
-        //Then the LiveData with remindersList should be null
-        assertThat(result, (`is`(nullValue())))
-    }*/
 
     //CHECK LOADING
 
