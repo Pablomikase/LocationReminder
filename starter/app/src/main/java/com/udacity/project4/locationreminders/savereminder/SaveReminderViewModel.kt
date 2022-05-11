@@ -81,7 +81,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
                 )
             )
             showLoading.value = false
-            navigationCommand.value = NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToReminderListFragment())
+            //navigationCommand.value = NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToReminderListFragment())
         }
     }
 
